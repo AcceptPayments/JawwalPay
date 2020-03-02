@@ -1,0 +1,3 @@
+rootProject.name='Android_SDK_Example'
+include ':app'
+include ':androidsdk'
