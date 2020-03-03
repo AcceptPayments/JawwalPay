@@ -23,7 +23,7 @@ public class Pay  extends AppCompatActivity {
         mywebview.setWebViewClient(new WebViewClient());
 
 
-        mywebview.loadUrl("https://accept.paymobsolutions.com/api/acceptance/iframes/" + IframeID + "?payment_token=" + PaymentKey);
+        mywebview.loadUrl("https://acceptstagingtest.paymobsolutions.com/api/acceptance/iframes/" + IframeID + "?payment_token=" + PaymentKey);
 
     }
 
