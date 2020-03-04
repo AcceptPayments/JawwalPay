@@ -6,7 +6,9 @@
     android:versionName="1.0" >
     <uses-permission android:name="android.permission.INTERNET"/>
     <application>
-    <activity android:name="com.example.androidsdk.Pay">
+    <activity android:name="com.example.androidsdk.Pay"
+        android:label="Accept payments"
+        android:configChanges="orientation|screenSize">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
 
