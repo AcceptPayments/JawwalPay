@@ -17,7 +17,6 @@ import java.net.URL;
 public class Pay  extends AppCompatActivity {
     public String PaymentKey;
     public int IframeID;
-
     public void StartPayment(String paymentKey, int iframeID) {
 
         WebView mywebview = (WebView) findViewById(R.id.webView);
