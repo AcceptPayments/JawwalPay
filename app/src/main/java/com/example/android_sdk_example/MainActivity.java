@@ -11,9 +11,14 @@ import android.widget.Toast;
 import com.example.androidsdk.IntentKeys;
 import com.example.androidsdk.Pay;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
-    String paymentKey = "ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SmpkWEp5Wlc1amVTSTZJa1ZIVUNJc0ltRnRiM1Z1ZEY5alpXNTBjeUk2TVRBd0xDSndiV3RmYVhBaU9pSTBNUzR5TXpRdU1qQTFMakl6T0NJc0ltVjRjQ0k2TVRVNU1UYzVNemN5Tnl3aWFXNTBaV2R5WVhScGIyNWZhV1FpT2pRNE5UZ3NJbXh2WTJ0ZmIzSmtaWEpmZDJobGJsOXdZV2xrSWpwbVlXeHpaU3dpZFhObGNsOXBaQ0k2TXpVMU5Td2liM0prWlhKZmFXUWlPalV5TURNMU5qTXNJbUpwYkd4cGJtZGZaR0YwWVNJNmV5Sm1hWEp6ZEY5dVlXMWxJam9pUTJ4cFptWnZjbVFpTENKc1lYTjBYMjVoYldVaU9pSk9hV052YkdGeklpd2ljM1J5WldWMElqb2lSWFJvWVc0Z1RHRnVaQ0lzSW1KMWFXeGthVzVuSWpvaU9EQXlPQ0lzSW1ac2IyOXlJam9pTkRJaUxDSmhjR0Z5ZEcxbGJuUWlPaUk0TURNaUxDSmphWFI1SWpvaVNtRnphMjlzYzJ0cFluVnlaMmdpTENKemRHRjBaU0k2SWxWMFlXZ2lMQ0pqYjNWdWRISjVJam9pUTFJaUxDSmxiV0ZwYkNJNkltTnNZWFZrWlhSMFpUQTVRR1Y0WVM1amIyMGlMQ0p3YUc5dVpWOXVkVzFpWlhJaU9pSXJPRFlvT0NrNU1UTTFNakV3TkRnM0lpd2ljRzl6ZEdGc1gyTnZaR1VpT2lJd01UZzVPQ0lzSW1WNGRISmhYMlJsYzJOeWFYQjBhVzl1SWpvaVRrRWlmWDAuMXdtdUQ3TUFfLVk0a19hWUpScnVNMm9ZWU9nZFJJWUxlWXFXRmV5RjdPYW5iQjEtZnFFdmZBTWxDbERNYVQyeFZPbkhGZnVYbkMtNUJjS1ZkVVJXaUE=";
+    String paymentKey = "ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SmlhV3hzYVc1blgyUmhkR0VpT25zaVptbHljM1JmYm1GdFpTSTZJa05zYVdabWIzSmtJaXdpYkdGemRGOXVZVzFsSWpvaVRtbGpiMnhoY3lJc0luTjBjbVZsZENJNklrVjBhR0Z1SUV4aGJtUWlMQ0ppZFdsc1pHbHVaeUk2SWpnd01qZ2lMQ0ptYkc5dmNpSTZJalF5SWl3aVlYQmhjblJ0Wlc1MElqb2lPREF6SWl3aVkybDBlU0k2SWtwaGMydHZiSE5yYVdKMWNtZG9JaXdpYzNSaGRHVWlPaUpWZEdGb0lpd2lZMjkxYm5SeWVTSTZJa05TSWl3aVpXMWhhV3dpT2lKamJHRjFaR1YwZEdVd09VQmxlR0V1WTI5dElpd2ljR2h2Ym1WZmJuVnRZbVZ5SWpvaUt6ZzJLRGdwT1RFek5USXhNRFE0TnlJc0luQnZjM1JoYkY5amIyUmxJam9pTURFNE9UZ2lMQ0psZUhSeVlWOWtaWE5qY21sd2RHbHZiaUk2SWs1QkluMHNJbWx1ZEdWbmNtRjBhVzl1WDJsa0lqbzJPVGN4TENKbGVIQWlPak0yTURBd01EQXdNREF3TURFMU9UZzVOamMzTURFc0luVnpaWEpmYVdRaU9qTTFOVFVzSW14dlkydGZiM0prWlhKZmQyaGxibDl3WVdsa0lqcG1ZV3h6WlN3aVkzVnljbVZ1WTNraU9pSkZSMUFpTENKaGJXOTFiblJmWTJWdWRITWlPalV3TURBd01Dd2liM0prWlhKZmFXUWlPalU0TXprek9EUXNJbkJ0YTE5cGNDSTZJalF4TGpJek5pNHhORE11TVRrekluMC43cmZMakpGeHlrcjliRzQ1S08xcW1BbF9IdWVBRlcyM1VYU3d3VnNldUlELXAtYWVqLTAyR1g5V28xSlhIaUxzYmwwa1V2RE5vQU9nMG1fd1RmYmU3UQ==";
     int IframeID = 21734;
     String Endpoint = "https://accept.paymobsolutions.com/api/acceptance/post_pay";
     String success = "";
@@ -23,9 +28,11 @@ public class MainActivity extends AppCompatActivity {
     String integration_id = "";
     String has_parent_transaction = "";
     String txn_response_code = "";
-    String acq_response_code = "";
-    static String ErrorMessage;
+    JSONObject payData;
+    String Data;
+
     private static final String TAG = "tag";
+     String DataMessage="";
 
     private void StartPayActivity() {
 
@@ -35,12 +42,6 @@ public class MainActivity extends AppCompatActivity {
         pay_intent.putExtra(IntentKeys.ENDPOINT_URL, Endpoint);
 
         startActivityForResult(pay_intent, 1);
-
-    }
-
-    public static void setErrorMessage(String errorMessage) {
-
-        MainActivity.ErrorMessage = errorMessage;
 
     }
 
@@ -61,30 +62,47 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                success = data.getStringExtra("success");
-                Id = data.getStringExtra("ID");
-                amount_cents = data.getStringExtra("amount_cents");
-                Log.d(TAG, "amount cents: " + amount_cents);
-                integration_id = data.getStringExtra("integration_id");
-                Log.d(TAG, "integration_id: " + integration_id);
-                has_parent_transaction = data.getStringExtra("has_parent_transaction");
-                Log.d(TAG, "has_parent_transaction: " + has_parent_transaction);
-                txn_response_code = data.getStringExtra("txn_response_code");
-                Log.d(TAG, "txn_response_code: " + txn_response_code);
+                Data = data.getStringExtra("data");
 
+                if (Data != null) {
 
-                if (txn_response_code != null) {
-                    int ErrorCode = 5;
-                    if (ErrorCode == Integer.parseInt(txn_response_code)) {
-                        this.setErrorMessage("insufficient funds");
+                    try {
+                        payData = new JSONObject(Data);
 
-                        Log.d(TAG, "Error Message:" + " " + ErrorMessage);
+                        Id = payData.getString("id");
+                        Log.d(TAG, "ID:" + " " + Id);
+                        success = payData.getString("success");
+                        Log.d(TAG, "success:" + " " + success);
+                        DataMessage = payData.getString("data.message");
+                        Log.d(TAG, "DataMessage:" + " " + DataMessage);
+                        amount_cents = payData.getString("amount_cents");
+                        Log.d(TAG, "amount cents:" + " " + amount_cents);
+                        has_parent_transaction = payData.getString("has_parent_transaction");
+                        Log.d(TAG, "Has parent transaction:" + " " + has_parent_transaction);
+                        integration_id = payData.getString("integration_id");
+                        Log.d(TAG, "integration ID:" + " " + integration_id);
+                        txn_response_code = payData.getString("txn_response_code");
+                        Log.d(TAG, "txn_response_code:" + " " + txn_response_code);
+                        Log.d(TAG,"full data:"+ " " + Data);
+
+                    } catch (JSONException e) {
+
+                      String  Error = data.getStringExtra("notifyError");
+                        Log.d(TAG, "Error:" + " " + Error);
+
+                        e.printStackTrace();
+
                     }
+
                 }
-                acq_response_code = data.getStringExtra("acq_response_code");
-                Log.d(TAG, "acq_response_code: " + acq_response_code);
-                userCancelled = data.getBooleanExtra("userCancelled", false);
-                Log.d(TAG, "User Cancelled" + " " + userCancelled);
+                else {
+                    userCancelled = data.getBooleanExtra("userCancelled",false);
+                    Log.d(TAG,"user cancelled:" + " "+ userCancelled);
+
+
+                }
+
+
             }
         }
     }

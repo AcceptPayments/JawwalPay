@@ -79,12 +79,7 @@ public class Pay extends AppCompatActivity {
                     finish();
 
                 }
-//                else if (view.getOriginalUrl()=="https://migs.mastercard.com.au/ssl") {
-//
-//                    notifyErrorTransaction("transaction couldn't be completed");
-//                    mywebview.destroy();
-//
-//                }
+else {notifyErrorTransaction("Make sure to set the Correct endpoint to capture the transaction fields");}
 
             }
 
