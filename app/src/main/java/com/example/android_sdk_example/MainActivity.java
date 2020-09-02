@@ -1,26 +1,49 @@
 package com.example.android_sdk_example;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.androidsdk.IntentKeys;
 import com.example.androidsdk.Pay;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
-    String paymentKey="ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SnZjbVJsY2w5cFpDSTZORFkxTWpVek5pd2liRzlqYTE5dmNtUmxjbDkzYUdWdVgzQmhhV1FpT21aaGJITmxMQ0ppYVd4c2FXNW5YMlJoZEdFaU9uc2labWx5YzNSZmJtRnRaU0k2SWtOc2FXWm1iM0prSWl3aWJHRnpkRjl1WVcxbElqb2lUbWxqYjJ4aGN5SXNJbk4wY21WbGRDSTZJa1YwYUdGdUlFeGhibVFpTENKaWRXbHNaR2x1WnlJNklqZ3dNamdpTENKbWJHOXZjaUk2SWpReUlpd2lZWEJoY25SdFpXNTBJam9pT0RBeklpd2lZMmwwZVNJNklrcGhjMnR2YkhOcmFXSjFjbWRvSWl3aWMzUmhkR1VpT2lKVmRHRm9JaXdpWTI5MWJuUnllU0k2SWtOU0lpd2laVzFoYVd3aU9pSmpiR0YxWkdWMGRHVXdPVUJsZUdFdVkyOXRJaXdpY0dodmJtVmZiblZ0WW1WeUlqb2lLemcyS0RncE9URXpOVEl4TURRNE55SXNJbkJ2YzNSaGJGOWpiMlJsSWpvaU1ERTRPVGdpTENKbGVIUnlZVjlrWlhOamNtbHdkR2x2YmlJNklrNUJJbjBzSW5CdGExOXBjQ0k2SWpFNU5pNHhOVE11TWpBdU1UWXhJaXdpWTNWeWNtVnVZM2tpT2lKSlRGTWlMQ0oxYzJWeVgybGtJam8wTnpBMUxDSmhiVzkxYm5SZlkyVnVkSE1pT2pFd01Dd2lhVzUwWldkeVlYUnBiMjVmYVdRaU9qRXpNekl3TENKbGVIQWlPakV3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREF3TURBd01EQXdNREUxT0RNM05qQTBPRFo5LkVtbklnLWlWMFBRZFFtSkxYSFE5cFdYblNNb2swTFpTMEpJWUFWUm1pVGtobE5lVGxmLS05YmUyMEYtOVZyZmZpRUxhdFFqbXNEaVpYaUFYUXlHYmtR";
-    int IframeID= 21584;
 
+    String paymentKey = "ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SmlhV3hzYVc1blgyUmhkR0VpT25zaVptbHljM1JmYm1GdFpTSTZJa05zYVdabWIzSmtJaXdpYkdGemRGOXVZVzFsSWpvaVRtbGpiMnhoY3lJc0luTjBjbVZsZENJNklrVjBhR0Z1SUV4aGJtUWlMQ0ppZFdsc1pHbHVaeUk2SWpnd01qZ2lMQ0ptYkc5dmNpSTZJalF5SWl3aVlYQmhjblJ0Wlc1MElqb2lPREF6SWl3aVkybDBlU0k2SWtwaGMydHZiSE5yYVdKMWNtZG9JaXdpYzNSaGRHVWlPaUpWZEdGb0lpd2lZMjkxYm5SeWVTSTZJa05TSWl3aVpXMWhhV3dpT2lKamJHRjFaR1YwZEdVd09VQmxlR0V1WTI5dElpd2ljR2h2Ym1WZmJuVnRZbVZ5SWpvaUt6ZzJLRGdwT1RFek5USXhNRFE0TnlJc0luQnZjM1JoYkY5amIyUmxJam9pTURFNE9UZ2lMQ0psZUhSeVlWOWtaWE5qY21sd2RHbHZiaUk2SWs1QkluMHNJbWx1ZEdWbmNtRjBhVzl1WDJsa0lqbzJPVGN4TENKbGVIQWlPak0yTURBd01EQXdNREF3TURFMU9UZzVOamMzTURFc0luVnpaWEpmYVdRaU9qTTFOVFVzSW14dlkydGZiM0prWlhKZmQyaGxibDl3WVdsa0lqcG1ZV3h6WlN3aVkzVnljbVZ1WTNraU9pSkZSMUFpTENKaGJXOTFiblJmWTJWdWRITWlPalV3TURBd01Dd2liM0prWlhKZmFXUWlPalU0TXprek9EUXNJbkJ0YTE5cGNDSTZJalF4TGpJek5pNHhORE11TVRrekluMC43cmZMakpGeHlrcjliRzQ1S08xcW1BbF9IdWVBRlcyM1VYU3d3VnNldUlELXAtYWVqLTAyR1g5V28xSlhIaUxzYmwwa1V2RE5vQU9nMG1fd1RmYmU3UQ==";
+    int IframeID = 21734;
+    String Endpoint = "https://accept.paymobsolutions.com/api/acceptance/post_pay";
+    String success = "";
+    String Id = "";
+    String amount_cents = "";
+    Boolean userCancelled;
+    String integration_id = "";
+    String has_parent_transaction = "";
+    String txn_response_code = "";
+    JSONObject payData;
+    String Data;
 
-    private void StartPayActivity(){
+    private static final String TAG = "tag";
+     String DataMessage="";
 
-      Intent pay_intent = new Intent(this, Pay.class);
-      pay_intent.putExtra(IntentKeys.PAYMENT_KEY, paymentKey);
-      pay_intent.putExtra(String.valueOf(IntentKeys.IFRAMEID), IframeID);
-      startActivity(pay_intent);
+    private void StartPayActivity() {
 
-  }
+        Intent pay_intent = new Intent(this, Pay.class);
+        pay_intent.putExtra(IntentKeys.PAYMENT_KEY, paymentKey);
+        pay_intent.putExtra(String.valueOf(IntentKeys.IFRAMEID), IframeID);
+        pay_intent.putExtra(IntentKeys.ENDPOINT_URL, Endpoint);
+
+        startActivityForResult(pay_intent, 1);
+
+    }
 
 
     @Override
@@ -31,5 +54,56 @@ public class MainActivity extends AppCompatActivity {
         StartPayActivity();
 
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Data = data.getStringExtra("data");
+
+                if (Data != null) {
+
+                    try {
+                        payData = new JSONObject(Data);
+
+                        Id = payData.getString("id");
+                        Log.d(TAG, "ID:" + " " + Id);
+                        success = payData.getString("success");
+                        Log.d(TAG, "success:" + " " + success);
+                        DataMessage = payData.getString("data.message");
+                        Log.d(TAG, "DataMessage:" + " " + DataMessage);
+                        amount_cents = payData.getString("amount_cents");
+                        Log.d(TAG, "amount cents:" + " " + amount_cents);
+                        has_parent_transaction = payData.getString("has_parent_transaction");
+                        Log.d(TAG, "Has parent transaction:" + " " + has_parent_transaction);
+                        integration_id = payData.getString("integration_id");
+                        Log.d(TAG, "integration ID:" + " " + integration_id);
+                        txn_response_code = payData.getString("txn_response_code");
+                        Log.d(TAG, "txn_response_code:" + " " + txn_response_code);
+                        Log.d(TAG,"full data:"+ " " + Data);
+
+                    } catch (JSONException e) {
+
+                      String  Error = data.getStringExtra("notifyError");
+                        Log.d(TAG, "Error:" + " " + Error);
+
+                        e.printStackTrace();
+
+                    }
+
+                }
+                else {
+                    userCancelled = data.getBooleanExtra("userCancelled",false);
+                    Log.d(TAG,"user cancelled:" + " "+ userCancelled);
+
+
+                }
+
+
+            }
+        }
     }
 }

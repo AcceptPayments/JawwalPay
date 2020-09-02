@@ -6,15 +6,11 @@
     android:versionName="1.0" >
     <uses-permission android:name="android.permission.INTERNET"/>
     <application>
-    feature/jawwal_iFrame_edit
     <activity android:name="com.example.androidsdk.Pay"
-        android:label="Jawaal Pay"
-        android:configChanges="orientation|screenSize">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+        android:label="Jawwal Pay"
+        android:configChanges="orientation|screenSize">
+
     </activity>
 
     </application>
