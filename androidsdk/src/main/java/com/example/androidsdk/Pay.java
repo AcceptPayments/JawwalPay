@@ -6,37 +6,40 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONObject;
+
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Pay extends AppCompatActivity {
     public String PaymentKey;
     public int IframeID;
     public String URL = "";
     public String Endpoint = "";
-    String success = "";
-    String Id = "";
-    String amount_cents = "";
-    String integration_id = "";
-    String has_parent_transaction = "";
-    String txn_response_code = "";
-    String acq_response_code = "";
+    String  Data="";
 
     final Intent result = new Intent();
 
     public void StartPayment(String paymentKey, int iframeID) {
 
-        final WebView mywebview = (WebView) findViewById(R.id.webView);
+       final LinearLayout linearLayout = findViewById(R.id.layout);
+       final WebView mywebview = (WebView) findViewById(R.id.webView);
 
         mywebview.setWebViewClient(new WebViewClient() {
 
@@ -56,7 +59,9 @@ public class Pay extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
+
             }
+
 
             @Override
             public void onPageFinished(WebView view, String url) {
@@ -64,39 +69,25 @@ public class Pay extends AppCompatActivity {
                 if (view.getOriginalUrl().contains(Endpoint)) {
 
                     URL = view.getOriginalUrl();
-                    Uri uri = Uri.parse(URL);
-
-                    if (uri != null) {
-                        success = uri.getQueryParameter("success");
-                        Id = uri.getQueryParameter("id");
-                        amount_cents = uri.getQueryParameter("amount_cents");
-                        integration_id = uri.getQueryParameter("integration_id");
-                        has_parent_transaction = uri.getQueryParameter("has_parent_transaction");
-                        txn_response_code = uri.getQueryParameter("txn_response_code");
-                        acq_response_code = uri.getQueryParameter("acq_response_code");
-
-
-                        mywebview.destroy();
-
-                    }
-
-
-                    result.putExtra("success", success);
-                    result.putExtra("ID", Id);
-                    result.putExtra("amount_cents", amount_cents);
-                    result.putExtra("integration_id", integration_id);
-                    result.putExtra("has_parent_transaction", has_parent_transaction);
-                    result.putExtra("txn_response_code", txn_response_code);
-                    result.putExtra("acq_response_code", acq_response_code);
-
+                  //  Uri uri = Uri.parse(URL);
+                    Data = getQueryParams(URL);
+                    result.putExtra("data",Data);
                     setResult(RESULT_OK, result);
+                    linearLayout.removeAllViews();
+                    mywebview.destroy();
 
                     finish();
 
-
                 }
+//                else if (view.getOriginalUrl()=="https://migs.mastercard.com.au/ssl") {
+//
+//                    notifyErrorTransaction("transaction couldn't be completed");
+//                    mywebview.destroy();
+//
+//                }
 
             }
+
 
         });
 
@@ -114,7 +105,43 @@ public class Pay extends AppCompatActivity {
             mywebview.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
         }
 
-        mywebview.loadUrl("https://accept.paymobsolutions.com/api/acceptance/iframes/" + IframeID + "?payment_token=" + PaymentKey);
+        mywebview.loadUrl("https://checkout.jawwalpay.ps/api/acceptance/iframes/" + IframeID + "?payment_token=" + PaymentKey);
+
+
+
+    }
+
+    public String getQueryParams(String url){
+        try {
+            JSONObject JSON = new JSONObject();
+            String[] urlParts = url.split("\\?");
+            if (urlParts.length > 1) {
+                String query = urlParts[1];
+                for (String param : query.split("&")) {
+                    String[] pair = param.split("=");
+                    String key = URLDecoder.decode(pair[0], "UTF-8");
+                    String value = "";
+                    if (pair.length > 1) {
+                        value = URLDecoder.decode(pair[1], "UTF-8");
+                        JSON.put(key, value);
+                    }
+                }
+            }
+            return JSON.toString();
+        } catch (Exception ex) {
+            String message = String.valueOf(Log.d("parsing error", "getQueryParams: "+ex.getMessage()));
+
+            return message;
+
+
+        }
+
+
+    }
+    public void notifyErrorTransaction(String reason) {
+        result.putExtra("notifyError", reason);
+        setResult(RESULT_OK, result);
+
 
     }
 
@@ -136,6 +163,9 @@ public class Pay extends AppCompatActivity {
 
         StartPayment(PaymentKey, IframeID);
 
+    }
+    @Override
+    public void onBackPressed() {
     }
 
     @Override
@@ -160,13 +190,8 @@ public class Pay extends AppCompatActivity {
     }
 
     @Override
-    public void onDestroy() {
+    protected void onDestroy() {
+
         super.onDestroy();
-        try {
-            Runtime.getRuntime().gc();
-            finish();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
